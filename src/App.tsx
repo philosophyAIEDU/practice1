@@ -12,9 +12,10 @@ import {
   isSameDay,
 } from 'date-fns';
 import { ko } from 'date-fns/locale';
-import { PlusCircle, Trash2, Calendar as CalendarIcon, User, BarChart2, Repeat, Check, ChevronLeft, ChevronRight } from 'lucide-react';
+import { PlusCircle, Trash2, Calendar as CalendarIcon, User, BarChart2, Repeat, Check, ChevronLeft, ChevronRight, LogOut } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { useRoutines } from './hooks/useRoutines';
+import { useAuth } from './contexts/AuthContext';
 import { cn } from './lib/utils';
 import type { Category, TimeFilter } from './types';
 
@@ -23,6 +24,7 @@ const TIMES: TimeFilter[] = ['전체', '아침', '낮', '저녁'];
 const EMOJIS = ['🏃', '📚', '🧘', '🍎', '💧', '🌿', '🏋️', '💻'];
 
 export default function App() {
+  const { user, loginWithGoogle, logout, loading } = useAuth();
   const { routines, logs, addRoutine, deleteRoutine, toggleRoutineLog, getProgress, getStrikeDays } = useRoutines();
   
   const [today] = useState(() => new Date());
@@ -101,13 +103,42 @@ export default function App() {
     return 'bg-error'; // Red
   };
 
+  if (loading) {
+    return <div className="min-h-screen flex items-center justify-center text-primary font-bold">로딩 중...</div>;
+  }
+
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center px-6">
+        <h1 className="font-headline font-bold text-primary text-4xl mb-2">✨ 나의 갓생 루틴</h1>
+        <p className="text-on-surface-variant mb-10 text-center">당신만의 멋진 하루를 계획하고 기록하세요.<br/>어디서든 실시간으로 동기화됩니다.</p>
+        <button 
+          onClick={loginWithGoogle}
+          className="bg-surface-container-lowest text-on-surface border border-outline-variant/30 px-6 py-4 rounded-full shadow-lg flex items-center gap-3 hover:scale-105 transition-transform"
+        >
+          <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" className="w-6 h-6" />
+          <span className="font-bold text-lg">Google 계정으로 시작하기</span>
+        </button>
+      </div>
+    );
+  }
+
   return (
     <div className="text-on-surface bg-background min-h-[100dvh] relative pb-32">
       <header className="flex flex-col pt-6 pb-4 px-6 w-full max-w-2xl mx-auto z-40 bg-surface sticky top-0">
         <div className="flex items-center justify-between mb-2">
           <h1 className="font-headline tracking-tight font-bold text-primary text-2xl">✨ 나의 갓생 루틴</h1>
-          <div className="w-10 h-10 rounded-full bg-surface-container-highest overflow-hidden flex items-center justify-center text-outline-variant font-bold">
-            YOU
+          <div className="flex items-center gap-3">
+            <button onClick={logout} className="p-2 text-on-surface-variant hover:text-error transition-colors" title="로그아웃">
+              <LogOut className="w-5 h-5" />
+            </button>
+            <div className="w-10 h-10 rounded-full bg-surface-container-highest flex items-center justify-center text-on-surface-variant font-bold border border-outline-variant/30 overflow-hidden shadow-sm">
+              {user.photoURL ? (
+                <img src={user.photoURL} alt="profile" className="w-full h-full object-cover" />
+              ) : (
+                user.displayName?.charAt(0) || "U"
+              )}
+            </div>
           </div>
         </div>
         
