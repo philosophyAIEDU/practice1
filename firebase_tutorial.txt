@@ -1,0 +1,66 @@
+# 초보자를 위한 Firebase 연동 튜토리얼 (with AI MCP)
+
+이 튜토리얼은 AI(Gemini 등)의 Firebase MCP를 활용하여 웹 프로젝트에 Firebase를 연동하고, Netlify에 배포한 뒤 Google 로그인을 설정하는 전체 과정을 안내합니다.
+
+## 1단계: AI에게 Firebase 연동 요청하기 (MCP 활용)
+
+개발 환경에 Firebase MCP가 연결되어 있다면, AI에게 자연어로 요청하여 복잡한 설정 과정을 쉽게 해결할 수 있습니다.
+
+1. AI에게 요청하기: "내 프로젝트에 Firebase Auth(구글 로그인)와 Firestore(데이터베이스)를 연동해줘."
+2. AI가 수행하는 작업:
+   - `firebase.ts` 설정 파일 생성 (환경 변수를 사용하도록 구성)
+   - `AuthContext.tsx` 파일 생성 (로그인 상태 관리)
+   - 패키지 설치 (`npm install firebase`)
+3. 로컬 테스트: 로컬 환경(`.env.local`)에 AI가 알려주는 환경변수를 추가하고 `npm run dev`로 잘 작동하는지 확인합니다.
+
+---
+
+## 2단계: Netlify 배포 및 환경 변수 설정
+
+로컬에서 잘 작동하던 프로젝트를 Netlify에 배포하면 하얀 화면이 나오며 에러가 발생할 수 있습니다. 이는 빌드 서버에 환경 변수 정보가 없기 때문입니다.
+
+1. Netlify 환경 변수 추가
+   - Netlify 대시보드 -> 해당 사이트 -> **Site configuration** -> **Environment variables** 로 이동합니다.
+   - **[Import from a .env file]** 버튼을 클릭합니다.
+   - 아래의 양식을 복사하여 자신의 Firebase 정보에 맞게 수정한 후 붙여넣습니다.
+
+   VITE_FIREBASE_API_KEY=자신의_API_키
+   VITE_FIREBASE_AUTH_DOMAIN=자신의_프로젝트.firebaseapp.com
+   VITE_FIREBASE_PROJECT_ID=자신의_프로젝트_ID
+   VITE_FIREBASE_STORAGE_BUCKET=자신의_프로젝트.firebasestorage.app
+   VITE_FIREBASE_MESSAGING_SENDER_ID=자신의_메시징_ID
+   VITE_FIREBASE_APP_ID=자신의_앱_ID
+
+2. 재배포 하기
+   - 환경 변수 입력 후 **[Deploys]** 탭으로 이동합니다.
+   - **[Trigger deploy]** -> **[Clear cache and deploy site]** 를 클릭하여 환경 변수가 적용된 상태로 다시 빌드합니다.
+
+---
+
+## 3단계: Firebase Console에서 Google 로그인 활성화
+
+앱에 화면이 나오더라도 로그인 버튼을 누르면 에러가 발생합니다. Firebase에서 Google 로그인 기능을 켜주어야 합니다.
+
+1. [Firebase Console](https://console.firebase.google.com/) 접속 후 자신의 프로젝트를 엽니다.
+2. 왼쪽 메뉴에서 **Authentication**을 클릭합니다.
+3. 상단 탭에서 **[로그인 방법]**을 선택합니다.
+4. '추가 제공업체' 섹션에서 **Google**을 클릭합니다.
+5. 우측 상단의 **'사용 설정'** 스위치를 켜서 파란색으로 만듭니다.
+6. **프로젝트 지원 이메일** 칸을 클릭하여 본인의 이메일을 선택합니다.
+7. **[저장]** 버튼을 누릅니다.
+
+---
+
+## 4단계: 승인된 도메인 추가 (Netlify 도메인 허용)
+
+마지막으로 Netlify의 배포 주소에서 Google 로그인을 사용할 수 있도록 허가해야 합니다.
+
+1. Authentication 메뉴의 상단 탭들 중 가장 오른쪽에 있는 **[설정]** 탭을 클릭합니다.
+   (주의: 화면 가장 왼쪽 띠 메뉴에 있는 톱니바퀴 '설정'이 아닙니다!)
+2. 왼쪽 서브 메뉴에서 **[승인된 도메인] (Authorized domains)**을 클릭합니다.
+3. **[도메인 추가]** 버튼을 누릅니다.
+4. Netlify에서 부여받은 자신의 도메인 주소(예: `practice1somssidang.netlify.app`)를 입력합니다.
+   (이때 `https://` 나 끝에 `/` 는 제외하고 순수 도메인만 입력합니다)
+5. **[추가]** 버튼을 누릅니다.
+
+🎉 완료! 이제 배포된 사이트에서 구글 로그인이 정상적으로 작동합니다.
