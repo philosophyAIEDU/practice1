@@ -25,7 +25,7 @@ const EMOJIS = ['🏃', '📚', '🧘', '🍎', '💧', '🌿', '🏋️', '💻
 
 export default function App() {
   const { user, loginWithGoogle, logout, loading } = useAuth();
-  const { routines, logs, addRoutine, deleteRoutine, toggleRoutineLog, getProgress, getStrikeDays } = useRoutines();
+  const { routines, logs, addRoutine, deleteRoutine, toggleRoutineLog, getProgress, getStrikeDays, loading: routinesLoading, error: routinesError } = useRoutines();
   
   const [today] = useState(() => new Date());
   const todayStr = format(today, 'yyyy-MM-dd');
@@ -119,6 +119,10 @@ export default function App() {
           <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" className="w-6 h-6" />
           <span className="font-bold text-lg">Google 계정으로 시작하기</span>
         </button>
+        <div className="mt-12 flex gap-6 text-sm text-outline-variant font-medium">
+          <a href="/tos.html" className="hover:text-primary transition-colors hover:underline">이용약관</a>
+          <a href="/privacy.html" className="hover:text-primary transition-colors hover:underline">개인정보처리방침</a>
+        </div>
       </div>
     );
   }
@@ -255,7 +259,13 @@ export default function App() {
           </div>
           
           <div className="space-y-4">
-            {routines.length === 0 ? (
+            {routinesLoading ? (
+              <div className="space-y-3 animate-pulse">
+                {[1, 2, 3].map(i => (
+                  <div key={i} className="h-20 bg-surface-container-highest rounded-lg opacity-50"></div>
+                ))}
+              </div>
+            ) : routines.length === 0 ? (
               <div className="text-center py-10 opacity-60">
                 <p>등록된 루틴이 없습니다.</p>
                 <p className="text-sm">위에서 새 루틴을 만들어보세요!</p>

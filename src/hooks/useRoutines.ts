@@ -9,13 +9,18 @@ export function useRoutines() {
   const { user } = useAuth();
   const [routines, setRoutines] = useState<Routine[]>([]);
   const [logs, setLogs] = useState<Logs>({});
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!user) {
       setRoutines([]);
       setLogs({});
+      setLoading(false);
       return;
     }
+
+    setLoading(true);
 
     // Listen to routines
     const routinesRef = collection(db, 'users', user.uid, 'routines');
@@ -26,6 +31,11 @@ export function useRoutines() {
         ...doc.data()
       } as Routine));
       setRoutines(fetchedRoutines);
+      setLoading(false);
+    }, (err) => {
+      console.error(err);
+      setError('데이터를 불러오는데 실패했습니다.');
+      setLoading(false);
     });
 
     // Listen to logs
@@ -37,6 +47,8 @@ export function useRoutines() {
         fetchedLogs[doc.id] = doc.data() as Record<string, boolean>;
       });
       setLogs(fetchedLogs);
+    }, (err) => {
+      console.error(err);
     });
 
     return () => {
@@ -47,42 +59,61 @@ export function useRoutines() {
 
   const addRoutine = async (name: string, category: Category, timeOfDay: TimeFilter, icon: string) => {
     if (!user) return;
-    const newId = crypto.randomUUID();
-    const newRoutine = {
-      name,
-      category,
-      timeOfDay,
-      icon,
-      createdAt: new Date().toISOString(),
-    };
-    
-    // Save to Firestore
-    const routineDoc = doc(db, 'users', user.uid, 'routines', newId);
-    await setDoc(routineDoc, newRoutine);
+    setError(null);
+    try {
+      const newId = crypto.randomUUID();
+      const newRoutine = {
+        name,
+        category,
+        timeOfDay,
+        icon,
+        createdAt: new Date().toISOString(),
+      };
+      
+      // Save to Firestore
+      const routineDoc = doc(db, 'users', user.uid, 'routines', newId);
+      await setDoc(routineDoc, newRoutine);
+    } catch (err) {
+      console.error(err);
+      setError('루틴 추가에 실패했습니다.');
+      alert('루틴 추가에 실패했습니다.');
+    }
   };
 
   const deleteRoutine = async (id: string) => {
     if (!user) return;
     if (!window.confirm('정말 이 루틴을 삭제할까요?')) return;
     
-    const routineDoc = doc(db, 'users', user.uid, 'routines', id);
-    await deleteDoc(routineDoc);
-
-    // Optional: We can also clean up logs in background if we want, but for now just deleting routine is fine
+    setError(null);
+    try {
+      const routineDoc = doc(db, 'users', user.uid, 'routines', id);
+      await deleteDoc(routineDoc);
+    } catch (err) {
+      console.error(err);
+      setError('루틴 삭제에 실패했습니다.');
+      alert('루틴 삭제에 실패했습니다.');
+    }
   };
 
   const toggleRoutineLog = async (dateStr: string, routineId: string) => {
     if (!user) return;
     
-    const logDoc = doc(db, 'users', user.uid, 'logs', dateStr);
-    const dayLog = logs[dateStr] || {};
-    const currentState = dayLog[routineId] || false;
-    
-    // We update or set the doc
-    await setDoc(logDoc, {
-      ...dayLog,
-      [routineId]: !currentState
-    });
+    setError(null);
+    try {
+      const logDoc = doc(db, 'users', user.uid, 'logs', dateStr);
+      const dayLog = logs[dateStr] || {};
+      const currentState = dayLog[routineId] || false;
+      
+      // We update or set the doc
+      await setDoc(logDoc, {
+        ...dayLog,
+        [routineId]: !currentState
+      });
+    } catch (err) {
+      console.error(err);
+      setError('체크 업데이트에 실패했습니다.');
+      alert('체크 업데이트에 실패했습니다.');
+    }
   };
 
   // calculate progress for a specific date
@@ -114,6 +145,8 @@ export function useRoutines() {
   return {
     routines,
     logs,
+    loading,
+    error,
     addRoutine,
     deleteRoutine,
     toggleRoutineLog,
