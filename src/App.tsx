@@ -86,8 +86,8 @@ export default function App() {
 
   const getDayStatusColor = (dateString: string) => {
     const p = getProgress(dateString);
-    if (p === 100) return 'bg-primary dark:bg-teal-400';
-    if (p > 0) return 'bg-secondary';
+    if (p === 100) return 'bg-primary text-white shadow-md shadow-primary/40';
+    if (p > 0) return 'bg-secondary text-white shadow-sm shadow-secondary/30';
     // If it's a past date and 0%, make it error
     if (new Date(dateString) < new Date(todayStr)) return 'bg-error text-white';
     return 'bg-surface-container-highest';
@@ -114,7 +114,7 @@ export default function App() {
         <p className="text-on-surface-variant mb-10 text-center">당신만의 멋진 하루를 계획하고 기록하세요.<br/>어디서든 실시간으로 동기화됩니다.</p>
         <button 
           onClick={loginWithGoogle}
-          className="bg-surface-container-lowest text-on-surface border border-outline-variant/30 px-6 py-4 rounded-full shadow-lg flex items-center gap-3 hover:scale-105 transition-transform"
+          className="bg-surface-container-lowest text-on-surface border border-outline-variant/50 px-6 py-4 rounded-full shadow-xl shadow-primary/10 flex items-center gap-3 hover:scale-105 transition-transform"
         >
           <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" className="w-6 h-6" />
           <span className="font-bold text-lg">Google 계정으로 시작하기</span>
@@ -146,7 +146,7 @@ export default function App() {
           </div>
         </div>
         
-        <div className="mt-4 p-5 bg-surface-container-lowest rounded-lg border border-outline-variant/20 shadow-sm">
+        <div className="mt-4 p-5 bg-surface-container-lowest rounded-2xl border border-outline-variant/50 shadow-md shadow-primary/5">
           <div className="flex justify-between items-end mb-3">
             <div>
               <p className="text-sm font-semibold text-on-surface-variant mb-1">{format(today, 'yyyy년 M월 d일 (E)', { locale: ko })}</p>
@@ -158,7 +158,7 @@ export default function App() {
           </div>
           <div className="w-full h-3 bg-surface-container-highest rounded-full overflow-hidden">
             <div 
-              className="h-full bg-gradient-to-r from-primary to-primary-container rounded-full relative transition-all duration-500 ease-out" 
+              className="h-full bg-gradient-to-r from-primary to-secondary rounded-full relative transition-all duration-500 ease-out shadow-[0_0_10px_rgba(255,138,179,0.5)]" 
               style={{ width: `${todayProgress}%` }}
             >
               {todayProgress > 0 && (
@@ -171,7 +171,7 @@ export default function App() {
 
       <main className="max-w-2xl mx-auto px-6 space-y-10">
         <section>
-          <div className="bg-surface-container-low p-6 rounded-lg border border-outline-variant/10 shadow-sm">
+          <div className="bg-surface-container-lowest p-6 rounded-2xl border border-outline-variant/50 shadow-md shadow-primary/5">
             <h3 className="text-lg font-bold font-headline mb-4 flex items-center gap-2">
               <PlusCircle className="text-primary w-6 h-6" /> 새 루틴 만들기
             </h3>
@@ -285,8 +285,8 @@ export default function App() {
 
                 return (
                   <div key={routine.id} className={cn(
-                    "group flex items-center p-5 bg-surface-container-lowest rounded-lg shadow-sm transition-all border-l-4",
-                    isChecked ? "border-primary opacity-60" : "border-transparent hover:translate-x-1"
+                    "group flex items-center p-5 bg-surface-container-lowest rounded-2xl shadow-sm border border-outline-variant/30 transition-all border-l-4",
+                    isChecked ? "border-l-primary opacity-60 bg-surface-container-high/50" : "border-l-transparent hover:translate-x-1 hover:shadow-md hover:shadow-primary/5"
                   )}>
                     <div className={cn(
                       "w-12 h-12 flex items-center justify-center rounded-full text-2xl mr-4",
@@ -403,7 +403,7 @@ export default function App() {
         </section>
       </main>
 
-      <nav className="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-6 pt-4 bg-surface-container-highest/80 backdrop-blur-xl rounded-t-[2rem] shadow-[0_-8px_32px_rgba(0,0,0,0.2)] border-t border-outline-variant/20">
+      <nav className="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-6 pt-4 bg-surface/80 backdrop-blur-xl rounded-t-[2rem] shadow-[0_-8px_32px_rgba(166,124,255,0.15)] border-t border-outline-variant/50">
         <button className="flex flex-col items-center justify-center text-primary px-6 py-2 scale-105 transition-transform">
           <Repeat className="w-6 h-6" />
           <span className="font-label text-[10px] font-bold uppercase tracking-wider mt-1">Routine</span>
